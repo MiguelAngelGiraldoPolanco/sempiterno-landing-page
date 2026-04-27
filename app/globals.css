@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Sempiterno Brand Colors */
+  --blush-pink: #f8d7da;
+  --sage-green: #4a7c44;
+  --deep-purple: #8a2b8b;
+  --cream: #fef9f3;
+  --warm-gray: #6b5b5b;
+  
+  --background: #fef9f3;
+  --foreground: #3d2c2c;
+  --card: #ffffff;
+  --card-foreground: #3d2c2c;
+  --popover: #ffffff;
+  --popover-foreground: #3d2c2c;
+  --primary: #8a2b8b;
+  --primary-foreground: #ffffff;
+  --secondary: #f8d7da;
+  --secondary-foreground: #3d2c2c;
+  --muted: #f8f4f0;
+  --muted-foreground: #6b5b5b;
+  --accent: #4a7c44;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e8ddd5;
+  --input: #e8ddd5;
+  --ring: #8a2b8b;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #1a1418;
+  --foreground: #f8f4f0;
+  --card: #2d2428;
+  --card-foreground: #f8f4f0;
+  --popover: #2d2428;
+  --popover-foreground: #f8f4f0;
+  --primary: #c77bc8;
+  --primary-foreground: #1a1418;
+  --secondary: #3d2c2c;
+  --secondary-foreground: #f8f4f0;
+  --muted: #3d2c2c;
+  --muted-foreground: #a89898;
+  --accent: #6b9b65;
+  --accent-foreground: #1a1418;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #4d3d3d;
+  --input: #4d3d3d;
+  --ring: #c77bc8;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans, 'Lato'), 'Lato Fallback', system-ui, sans-serif;
+  --font-serif: var(--font-serif, 'Playfair Display'), 'Playfair Display Fallback', Georgia, serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-blush-pink: var(--blush-pink);
+  --color-sage-green: var(--sage-green);
+  --color-deep-purple: var(--deep-purple);
+  --color-cream: var(--cream);
+  --color-warm-gray: var(--warm-gray);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom selection color */
+::selection {
+  background-color: rgba(138, 43, 139, 0.2);
+  color: #3d2c2c;
+}
