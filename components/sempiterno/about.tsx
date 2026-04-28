@@ -1,4 +1,4 @@
-import { Heart, Sparkles, HandHeart } from "lucide-react"
+import { Heart, Sparkles, HandHeart,Leaf  } from "lucide-react"
 
 const features = [
   {
@@ -36,21 +36,42 @@ export function About() {
           <div className="w-24 h-1 bg-gradient-to-r from-primary via-accent to-secondary mx-auto rounded-full" />
         </div>
         
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mb-16"> {/* Añadido mb-16 */}
           <p className="text-lg md:text-xl text-center text-muted-foreground leading-relaxed mb-8">
-            Desde las ferias artesanales de <span className="text-foreground font-semibold">Cali</span>, 
-            compartimos nuestra pasión por crear velas que trascienden lo ordinario. 
-            Cada pieza que elaboramos está impregnada de dedicación artesanal y el deseo 
-            de preservar los momentos más preciados de tu vida.
+            Sempiterno aromas y momentos nace del amor por los detalles, los recuerdos y la necesidad de crear piezas con propósito. Cada vela es una expresión de emociones, un símbolo de luz que acompaña momentos especiales y memorias que perduran en el tiempo.
           </p>
           <p className="text-lg md:text-xl text-center text-muted-foreground leading-relaxed">
-            Nos especializamos en capturar la esencia de tus mascotas y crear representaciones 
-            únicas de figuras religiosas, transformando cera en <span className="text-primary font-semibold">recuerdos eternos</span>.
+            Nuestra marca surge como una alternativa consciente al uso de la parafina, optando por ceras vegetales ecológicas que respetan el entorno y brindan una combustión más limpia.
           </p>
         </div>
+
+        {/* --- SECCIÓN CEO --- */}
+        <div className="max-w-5xl mx-auto mb-24 bg-background/50 rounded-3xl p-8 md:p-12 border border-border/40">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="w-48 h-48 md:w-64 md:h-64 flex-shrink-0 relative">
+              <img 
+                src="/ceo.png" // Asegúrate de tener esta imagen en public
+                alt="Fundadora de Sempiterno" 
+                className="w-full h-full object-cover rounded-2xl shadow-2xl"
+              />
+              <div className="absolute -bottom-4 -right-4 bg-accent p-3 rounded-xl shadow-lg">
+                <Leaf className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <div className="text-left">
+              <h3 className="font-serif text-2xl font-bold text-foreground mb-2">El alma tras el aroma</h3>
+              <p className="text-primary font-medium mb-4 italic">"Crear luz para abrazar el alma"</p>
+              <p className="text-muted-foreground leading-relaxed text-lg italic">
+                "Mi formación como bióloga despertó mi conciencia ambiental, y mi camino como artista realista me enseñó a amar cada pequeño detalle. Sempiterno es el punto donde la ciencia y el arte se encuentran para honrar lo que más amo: la naturaleza y los animales. Creo piezas a mano con materiales ecológicos, diseñadas para que tus recuerdos más queridos permanezcan siempre encendidos."
+              </p>
+              <p className="mt-6 font-serif text-xl text-foreground font-semibold">— Andrea G. Fundadora & Artesana</p>
+            </div>
+          </div>
+        </div>
+        {/* --- FIN SECCIÓN CEO --- */}
         
         {/* Features grid */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16">
+        <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div 
               key={index}
@@ -70,5 +91,5 @@ export function About() {
         </div>
       </div>
     </section>
-  )
+    )
 }

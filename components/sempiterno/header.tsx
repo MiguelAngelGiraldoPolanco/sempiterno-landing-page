@@ -49,10 +49,11 @@ export function Header() {
             onClick={() => scrollToSection("#")}
             className="flex items-center gap-2 group"
           >
-            <Flame className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
-            <span className="font-serif text-xl font-bold text-foreground hidden sm:block">
-              Sempiterno
-            </span>
+            <img 
+              src="/logo.png" 
+              alt="Sempiterno Logo" 
+              className="w-40 h-40 object-contain group-hover:scale-110 transition-transform bg-transparent" 
+            />
           </button>
           
           {/* Desktop Navigation */}

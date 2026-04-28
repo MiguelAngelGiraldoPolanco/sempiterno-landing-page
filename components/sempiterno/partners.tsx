@@ -17,6 +17,11 @@ const benefits = [
     description: "Cada pieza cumple con los más altos estándares de elaboración artesanal.",
   },
 ]
+const allies = [
+  { name: "Empresa 1", logo: "/logos/aliado1.png" },
+  { name: "Empresa 2", logo: "/logos/aliado2.png" },
+  { name: "Empresa 3", logo: "/logos/aliado3.png" },
+]
 
 export function Partners() {
   return (
@@ -40,17 +45,26 @@ export function Partners() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-gradient-to-br from-secondary/20 via-background to-primary/5 rounded-3xl p-8 md:p-12 border border-border/50">
             <div className="text-center mb-10">
-              <h3 className="font-serif text-2xl md:text-3xl font-semibold text-foreground mb-4">
-                Colaboramos con Funerarias de Animales
-              </h3>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Trabajamos de la mano con funerarias de mascotas en Cali y el Valle del Cauca, 
+                Trabajamos de la mano empresas en Cali y el Valle del Cauca, 
                 ofreciendo a las familias una forma hermosa y significativa de honrar 
                 la memoria de sus compañeros de vida.
               </p>
             </div>
-            
-            <div className="grid md:grid-cols-3 gap-6">
+
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 mb-16 opacity-80">
+              {allies.map((ally, index) => (
+                <div key={index} className="group">
+                  <img 
+                    src={ally.logo} 
+                    alt={ally.name} 
+                    className="h-12 md:h-16 w-auto grayscale group-hover:grayscale-0 transition-all duration-500 object-contain mix-blend-multiply" 
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* <div className="grid md:grid-cols-3 gap-6">
               {benefits.map((benefit, index) => (
                 <div key={index} className="text-center p-6">
                   <div className="w-14 h-14 bg-card rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
@@ -64,12 +78,12 @@ export function Partners() {
                   </p>
                 </div>
               ))}
-            </div>
+            </div> */}
             
             {/* CTA for businesses */}
             <div className="mt-10 text-center">
               <p className="text-muted-foreground mb-4">
-                ¿Eres una funeraria de mascotas y te gustaría colaborar con nosotros?
+                ¿Te gustaría colaborar con nosotros?
               </p>
               <a 
                 href="#contacto"

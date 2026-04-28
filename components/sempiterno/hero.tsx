@@ -27,32 +27,25 @@ export function Hero() {
         <Sparkles className="w-8 h-8" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-4 py-20 text-center">
+      <div className="relative z-10 container mx-auto px-4 pt-20 pb-32 text-center min-h-[90vh] flex flex-col justify-center items-center">
         {/* Logo/Brand */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <Flame className="w-10 h-10 text-primary" />
-            <span className="text-sm uppercase tracking-[0.3em] text-muted-foreground font-light">
-              Cali, Colombia
-            </span>
+          <div className="inline-flex items-center gap-3 mb-2">
+            <img 
+              src="/logo.png" 
+              alt="Sempiterno Logo" 
+              className="h-48 md:h-54 object-contain group-hover:scale-110 transition-transform bg-transparent" 
+            />
           </div>
         </div>
         
-        {/* Main heading */}
-        <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
-          <span className="block">Sempiterno</span>
-          <span className="block text-3xl md:text-4xl lg:text-5xl font-normal text-primary mt-2">
-            Aromas & Momentos
-          </span>
-        </h1>
-        
         {/* Tagline */}
-        <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light italic mb-8 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light italic mb-4 max-w-3xl mx-auto leading-relaxed">
           &ldquo;Luz que trasciende, aromas que abrazan el alma&rdquo;
         </p>
         
         {/* Specialty description */}
-        <p className="text-lg md:text-xl text-foreground/80 mb-12 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg md:text-xl text-foreground/80 mb-4 max-w-2xl mx-auto leading-relaxed">
           Expertos en velas personalizadas de <span className="text-accent font-semibold">mascotas</span> y{" "}
           <span className="text-primary font-semibold">figuras religiosas</span>. 
           Cada pieza es creada a mano con amor y dedicación.
