@@ -2,10 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import { Heart, Sparkles, PawPrint } from "lucide-react"
+import { PetPhotoCarousel } from "./photo-carousel"
+
+  
 
 export function PetMemorial() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-  const whatsappMessage = encodeURIComponent("Hola!¿Podrían darme más información?")
+  const whatsappMessage = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas de mascotas?")
 
   return (
     <section id="mascotas" className="py-24 bg-gradient-to-br from-secondary/30 via-background to-primary/5 relative overflow-hidden">
@@ -76,26 +79,22 @@ export function PetMemorial() {
             </div>
           </div>
           
-          {/* Visual display */}
           <div className="order-1 lg:order-2 relative">
             <div className="relative aspect-square max-w-md mx-auto">
-              {/* Main image container */}
+              {/* Fondo decorativo con rotación */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/30 to-accent/20 rounded-3xl transform rotate-3" />
-              <div className="absolute inset-0 bg-card rounded-3xl shadow-xl flex items-center justify-center border border-border/50">
-                <div className="text-center p-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-secondary to-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <PawPrint className="w-16 h-16 text-primary" />
-                  </div>
-                  <p className="font-serif text-2xl text-foreground mb-2">Tu mascota</p>
-                  <p className="text-muted-foreground">inmortalizada en cera</p>
-                </div>
+              
+              {/* CONTENEDOR DEL CARRUSEL */}
+              <div className="absolute inset-0 bg-card rounded-3xl shadow-xl border border-border/50 overflow-hidden flex flex-col justify-center">
+                <PetPhotoCarousel />
               </div>
               
-              {/* Floating badges */}
-              <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+              
+              {/* Floating badges - Añadimos z-10 para asegurar que estén por encima del carrusel */}
+              <div className="z-10 absolute -top-4 -right-4 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg">
                 100% Artesanal
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+              <div className="z-10 absolute -bottom-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg">
                 Hecho con Amor
               </div>
             </div>
