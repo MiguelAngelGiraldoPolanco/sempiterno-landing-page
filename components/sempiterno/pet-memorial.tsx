@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Heart, Sparkles, PawPrint } from "lucide-react"
 
 export function PetMemorial() {
-  const whatsappNumber = "573000000000" // Replace with actual number
-  const whatsappMessage = encodeURIComponent("Hola! Me interesa crear una vela personalizada de mi mascota. ¿Podrían darme más información?")
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+  const whatsappMessage = encodeURIComponent("Hola!¿Podrían darme más información?")
 
   return (
     <section id="mascotas" className="py-24 bg-gradient-to-br from-secondary/30 via-background to-primary/5 relative overflow-hidden">
