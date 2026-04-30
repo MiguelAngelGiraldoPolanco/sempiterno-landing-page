@@ -46,8 +46,8 @@ export function Hero() {
         
         {/* Specialty description */}
         <p className="text-lg md:text-xl text-foreground/80 mb-4 max-w-2xl mx-auto leading-relaxed">
-          Expertos en velas personalizadas de <span className="text-accent font-semibold">mascotas</span> y{" "}
-          <span className="text-primary font-semibold">figuras religiosas</span>. 
+          Expertos pequeñas obras de arte personalizadas que ta haran <span className="text-accent font-semibold">vivir</span> y{" "}
+          <span className="text-primary font-semibold">recordar momentos</span>. 
           Cada pieza es creada a mano con amor y dedicación.
         </p>
         
