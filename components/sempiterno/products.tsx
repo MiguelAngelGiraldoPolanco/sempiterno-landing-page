@@ -1,6 +1,16 @@
+"use client"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { PawPrint, Church, Sparkles, Flame } from "lucide-react"
 import {  PhotoCarousel } from "./photo-carousel"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 const products = [
   {
@@ -52,7 +62,7 @@ const products = [
   },
   {
     title: "Velas Decorativas",
-    description: "Piezas aromáticas únicas que transforman cualquier espacio en un refugio de paz.",
+    description: "Piezas que transforman cualquier espacio en un refugio de paz.",
     icon: Sparkles,
     gradient: "from-accent/20 via-accent/10 to-secondary/20",
     iconColor: "text-accent",
@@ -94,12 +104,7 @@ const products = [
 ]
 
 export function Products() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-  const whatsappMessage = encodeURIComponent("products.wha")
-  const whatsappMessageRelig = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas religiosas?")
-  const whatsappMessageSpecial = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas de ediciones especiales?")
-  const whatsappMessageDeco = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas decorativas?")
-
+  
   return (
     <section id="productos" className="py-24 bg-background relative overflow-hidden">
       {/* Decorative background */}
@@ -127,14 +132,8 @@ export function Products() {
               className="group border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl overflow-hidden"
             >
               <CardContent className="p-0">
-                <div className="relative h-64 w-full overflow-hidden">
-                  {/* Decorative circles */}
-                  {/* <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-4 right-4 w-20 h-20 border border-current rounded-full" />
-                    <div className="absolute bottom-4 left-4 w-16 h-16 border border-current rounded-full" />
-                  </div> */}
+                <div className="relative h-64 w-full overflow-hidden"> 
                   <PhotoCarousel photos={product.photos} delay={0}/>
-                  {/* <product.icon className={`w-20 h-20 ${product.iconColor} group-hover:scale-110 transition-transform duration-300`} /> */}
                 </div>
                 <div className="p-6">
                   <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
@@ -145,6 +144,23 @@ export function Products() {
                   </p>
                 </div>
               </CardContent>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="w-fit mx-auto felx items-center bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105"
+                >Ver Álbum</button>
+                </DialogTrigger>
+                
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Galería de {product.title}</DialogTitle> 
+                    <DialogDescription className="sr-only">
+                      Muestra una colección de imágenes detalladas sobre {product.title}.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <PhotoCarousel photos={product.photos} delay={2000} />
+                </DialogContent>
+              </Dialog>
             </Card>
           ))}
         </div>
