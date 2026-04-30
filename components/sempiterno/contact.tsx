@@ -1,6 +1,11 @@
-import { MapPin, Clock, Instagram, Heart } from "lucide-react"
+import { MapPin, Clock, Instagram, Heart, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
 
 export function Contact() {
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+  const whatsappMessage = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas?")
+
   return (
     <section id="contacto" className="py-24 bg-gradient-to-br from-primary/10 via-card to-accent/5 relative overflow-hidden">
       {/* Decorative elements */}
@@ -97,9 +102,25 @@ export function Contact() {
                   Escríbenos por WhatsApp y cuéntanos tu idea. 
                   Juntos crearemos una pieza única que honre tus momentos más preciados.
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-6">
                   Respondemos en menos de 24 horas
                 </p>
+                
+                  <Button 
+                    size="lg"
+                    className="w-fit mx-auto bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-4 text-lg rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105"
+                    asChild
+                  >
+                    <a 
+                      href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Escríbenos 
+                    </a>
+                  </Button>
+               
               </div>
             </div>
           </div>
