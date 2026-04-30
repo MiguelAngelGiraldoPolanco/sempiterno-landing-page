@@ -2,13 +2,28 @@
 
 import { Button } from "@/components/ui/button"
 import { Heart, Sparkles, PawPrint } from "lucide-react"
-import { PetPhotoCarousel } from "./photo-carousel"
+import {  PhotoCarousel } from "./photo-carousel"
 
   
 
 export function PetMemorial() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
   const whatsappMessage = encodeURIComponent("Hola!¿Podrían darme más información acerca de la personalizacion de velas de mascotas?")
+
+  const petPhotos = [
+    { src: "/velas-mascotas/masc1.jpeg", alt: "Mascota 1" },
+    { src: "/velas-mascotas/vela1.jpeg", alt: "Vela 1" },
+    { src: "/velas-mascotas/masc2.jpeg", alt: "Mascota 2" },
+    { src: "/velas-mascotas/vela2.jpeg", alt: "Vela 2" },
+    { src: "/velas-mascotas/masc3.jpeg", alt: "Mascota 3" },
+    { src: "/velas-mascotas/vela3.jpeg", alt: "Vela 3" },
+    { src: "/velas-mascotas/masc4.jpeg", alt: "Mascota 4" },
+    { src: "/velas-mascotas/vela4.jpeg", alt: "Vela 4" },
+    { src: "/velas-mascotas/masc5.jpeg", alt: "Mascota 5" },
+    { src: "/velas-mascotas/vela5.jpeg", alt: "Vela 5" },
+    { src: "/velas-mascotas/masc6.jpeg", alt: "Mascota 6" },
+    { src: "/velas-mascotas/vela6.jpeg", alt: "Vela 6" },
+  ];
 
   return (
     <section id="mascotas" className="py-24 bg-gradient-to-br from-secondary/30 via-background to-primary/5 relative overflow-hidden">
@@ -86,7 +101,7 @@ export function PetMemorial() {
               
               {/* CONTENEDOR DEL CARRUSEL */}
               <div className="absolute inset-0 bg-card rounded-3xl shadow-xl border border-border/50 overflow-hidden flex flex-col justify-center">
-                <PetPhotoCarousel />
+                < PhotoCarousel photos={petPhotos} delay={2000}/>
               </div>
               
               

@@ -12,37 +12,31 @@ import {
 import Image from "next/image"
 
 
-type photo = {
+type Photo = {
   src: string;
   alt: string;
 };
 
-export function PetPhotoCarousel() {
-  const photos : photo []= [
-    { src: "/velas-mascotas/masc1.jpeg", alt: "Mascota 1" },
-    { src: "/velas-mascotas/vela1.jpeg", alt: "Vela 1" },
-    { src: "/velas-mascotas/masc2.jpeg", alt: "Mascota 2" },
-    { src: "/velas-mascotas/vela2.jpeg", alt: "Vela 2" },
-    { src: "/velas-mascotas/masc3.jpeg", alt: "Mascota 3" },
-    { src: "/velas-mascotas/vela3.jpeg", alt: "Vela 3" },
-    { src: "/velas-mascotas/masc4.jpeg", alt: "Mascota 4" },
-    { src: "/velas-mascotas/vela4.jpeg", alt: "Vela 4" },
-    { src: "/velas-mascotas/masc5.jpeg", alt: "Mascota 5" },
-    { src: "/velas-mascotas/vela5.jpeg", alt: "Vela 5" },
-    { src: "/velas-mascotas/masc6.jpeg", alt: "Mascota 6" },
-    { src: "/velas-mascotas/vela6.jpeg", alt: "Vela 6" },
-  ]
+export function PhotoCarousel({ 
+    photos, 
+    delay = 2000 
+    }: { 
+    photos: Photo[], 
+    delay?: number 
+    }) {
+
+const plugins = delay && delay > 0 ? [
+    Autoplay({
+      delay: delay,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    })
+  ] : [];
 
   return (
     <div className="w-full relative px-12"> 
        <Carousel 
-        plugins={[
-          Autoplay({
-            delay: 2000,
-            stopOnInteraction: false, 
-            stopOnMouseEnter: true,
-          }),
-        ]}
+        plugins={plugins}
         className="w-full"
         >
         <CarouselContent>
