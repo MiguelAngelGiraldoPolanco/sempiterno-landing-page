@@ -46,7 +46,7 @@ export function Hero() {
         
         {/* Specialty description */}
         <p className="text-lg md:text-xl text-foreground/80 mb-4 max-w-2xl mx-auto leading-relaxed">
-          Expertos pequeñas obras de arte personalizadas que ta haran <span className="text-accent font-semibold">vivir</span> y{" "}
+          Expertos en pequeñas obras de arte personalizadas que ta harán <span className="text-accent font-semibold">vivir</span> y{" "}
           <span className="text-primary font-semibold">recordar momentos</span>. 
           Cada pieza es creada a mano con amor y dedicación.
         </p>
