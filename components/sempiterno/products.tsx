@@ -44,16 +44,13 @@ const products = [
     gradient: "from-primary/20 via-primary/10 to-accent/10",
     iconColor: "text-primary",
     photos:[
-      { src: "/velas-religiosas/rel1.jpeg", alt: "Religiosa 1" },
       { src: "/velas-religiosas/rel2.jpeg", alt: "Religiosa 2" },
-      { src: "/velas-religiosas/rel3.jpeg", alt: "Religiosa 3" },
       { src: "/velas-religiosas/rel4.jpeg", alt: "Religiosa 4" },
       { src: "/velas-religiosas/rel5.jpeg", alt: "Religiosa 5" },
       { src: "/velas-religiosas/rel6.jpeg", alt: "Religiosa 6" },
       { src: "/velas-religiosas/rel7.jpeg", alt: "Religiosa 7" },
       { src: "/velas-religiosas/rel8.jpeg", alt: "Religiosa 8" },
       { src: "/velas-religiosas/rel9.jpeg", alt: "Religiosa 9" },
-      { src: "/velas-religiosas/rel10.jpeg", alt: "Religiosa 10" },
       { src: "/velas-religiosas/rel11.jpeg", alt: "Religiosa 11" },
       { src: "/velas-religiosas/rel12.jpeg", alt: "Religiosa 12" },
       { src: "/velas-religiosas/rel13.jpeg", alt: "Religiosa 13" },
@@ -99,6 +96,9 @@ const products = [
       { src: "/ediciones-especiales/esp9.jpeg", alt: "Especial 9" },
       { src: "/ediciones-especiales/esp10.jpeg", alt: "Especial 10" },
       { src: "/ediciones-especiales/esp11.jpeg", alt: "Especial 11" },
+      { src: "/ediciones-especiales/esp12.jpeg", alt: "Especial 12" },
+      { src: "/ediciones-especiales/esp13.jpeg", alt: "Especial 13" },
+      { src: "/ediciones-especiales/esp14.jpeg", alt: "Especial 14" },
     ],
   },
 ]
@@ -154,7 +154,7 @@ export function Products() {
                   <DialogHeader>
                     <DialogTitle>Galería de {product.title}</DialogTitle> 
                     <DialogDescription className="sr-only">
-                      Muestra una colección de imágenes detalladas sobre {product.title}.
+                        Muestra una colección de imágenes detalladas sobre {product.title}.
                     </DialogDescription>
                   </DialogHeader>
                   

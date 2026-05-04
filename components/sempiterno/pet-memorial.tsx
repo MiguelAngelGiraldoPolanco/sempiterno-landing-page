@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Heart, Sparkles, PawPrint } from "lucide-react"
+import { PawPrint, Heart, Sparkles } from "lucide-react"
 import {  PhotoCarousel } from "./photo-carousel"
 
   

@@ -24,10 +24,10 @@ const testimonials = [
     stars: 5,
   },
   {
-    name: "Familia Gómez",
-    location: "Jamundí",
-    text: "La funeraria nos recomendó a Sempiterno y fue la mejor decisión. Ahora tenemos a nuestro Max iluminando nuestro hogar cada noche.",
-    pet: "En memoria de Max 🐕",
+    name: "Valentina Ocampo",
+    location: "Cali",
+    text: "Son los mejores en lo que hacen, gracias por acompañarme en estos momentos con su hermoso trabajo.",
+    pet: "",
     stars: 5,
   },
 ]
