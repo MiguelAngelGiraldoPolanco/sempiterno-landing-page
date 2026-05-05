@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { PawPrint, Church, Sparkles, Flame } from "lucide-react"
-import {  PhotoCarousel } from "./photo-carousel"
+import { PhotoCarousel } from "./photo-carousel"
 import {
   Dialog,
   DialogContent,
@@ -19,8 +19,8 @@ const products = [
     icon: PawPrint,
     gradient: "",
     iconColor: "text-primary",
-    whatsappMessage:"Hola!¿Podrían darme más información acerca de la personalizacion de velas de mascotas?",
-    photos:[
+    whatsappMessage: "Hola!¿Podrían darme más información acerca de la personalizacion de velas de mascotas?",
+    photos: [
       { src: "/mascotas/mas1.jpeg", alt: "Mascota 1" },
       { src: "/mascotas/mas2.jpeg", alt: "Mascota 2" },
       { src: "/mascotas/mas3.jpeg", alt: "Mascota 3" },
@@ -43,8 +43,10 @@ const products = [
     icon: Church,
     gradient: "from-primary/20 via-primary/10 to-accent/10",
     iconColor: "text-primary",
-    photos:[
+    photos: [
+      { src: "/velas-religiosas/rel1.jpeg", alt: "Religiosa 1" },
       { src: "/velas-religiosas/rel2.jpeg", alt: "Religiosa 2" },
+      { src: "/velas-religiosas/rel3.jpeg", alt: "Religiosa 3" },
       { src: "/velas-religiosas/rel4.jpeg", alt: "Religiosa 4" },
       { src: "/velas-religiosas/rel5.jpeg", alt: "Religiosa 5" },
       { src: "/velas-religiosas/rel6.jpeg", alt: "Religiosa 6" },
@@ -63,7 +65,7 @@ const products = [
     icon: Sparkles,
     gradient: "from-accent/20 via-accent/10 to-secondary/20",
     iconColor: "text-accent",
-    photos:[
+    photos: [
       { src: "/velas-decorativas/dec1.jpeg", alt: "dec 1" },
       { src: "/velas-decorativas/dec2.jpeg", alt: "dec 2" },
       { src: "/velas-decorativas/dec3.jpeg", alt: "dec 3" },
@@ -84,7 +86,7 @@ const products = [
     icon: Flame,
     gradient: "from-primary/10 via-secondary/30 to-accent/10",
     iconColor: "text-primary",
-    photos:[
+    photos: [
       { src: "/ediciones-especiales/esp1.jpeg", alt: "Especial 1" },
       { src: "/ediciones-especiales/esp2.jpeg", alt: "Especial 2" },
       { src: "/ediciones-especiales/esp3.jpeg", alt: "Especial 3" },
@@ -104,13 +106,13 @@ const products = [
 ]
 
 export function Products() {
-  
+
   return (
     <section id="productos" className="py-24 bg-background relative overflow-hidden">
       {/* Decorative background */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <span className="text-sm uppercase tracking-[0.2em] text-accent font-medium">
@@ -127,13 +129,13 @@ export function Products() {
         {/* aqui esta el div de la imagen */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => (
-            <Card 
+            <Card
               key={index}
               className="group border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl overflow-hidden"
             >
               <CardContent className="p-0">
-                <div className="relative h-64 w-full overflow-hidden"> 
-                  <PhotoCarousel photos={product.photos} delay={0}/>
+                <div className="relative h-64 w-full overflow-hidden">
+                  <PhotoCarousel photos={product.photos} delay={0} />
                 </div>
                 <div className="p-6">
                   <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
@@ -147,17 +149,17 @@ export function Products() {
               <Dialog>
                 <DialogTrigger asChild>
                   <button className="w-fit mx-auto felx items-center bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105"
-                >Ver Álbum</button>
+                  >Ver Álbum</button>
                 </DialogTrigger>
-                
+
                 <DialogContent className="max-w-4xl">
                   <DialogHeader>
-                    <DialogTitle>Galería de {product.title}</DialogTitle> 
+                    <DialogTitle>Galería de {product.title}</DialogTitle>
                     <DialogDescription className="sr-only">
-                        Muestra una colección de imágenes detalladas sobre {product.title}.
+                      Muestra una colección de imágenes detalladas sobre {product.title}.
                     </DialogDescription>
                   </DialogHeader>
-                  
+
                   <PhotoCarousel photos={product.photos} delay={2000} />
                 </DialogContent>
               </Dialog>
