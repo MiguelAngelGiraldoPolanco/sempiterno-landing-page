@@ -15,7 +15,7 @@ export function Hero() {
       <div className="absolute top-20 left-10 w-72 h-72 bg-secondary/30 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
-      
+
       {/* Floating decorative icons */}
       <div className="absolute top-32 right-20 text-primary/20 animate-pulse">
         <Flame className="w-12 h-12" />
@@ -26,43 +26,43 @@ export function Hero() {
       <div className="absolute top-48 left-32 text-secondary/40 animate-pulse delay-1000">
         <Sparkles className="w-8 h-8" />
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4 pt-20 pb-32 text-center min-h-[90vh] flex flex-col justify-center items-center">
         {/* Logo/Brand */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-3 mb-2">
-            <img 
-              src="/logo.png" 
-              alt="Sempiterno Logo" 
-              className="h-48 md:h-54 object-contain group-hover:scale-110 transition-transform bg-transparent" 
+            <img
+              src="/logo.png"
+              alt="Sempiterno Logo"
+              className="h-48 md:h-54 object-contain group-hover:scale-110 transition-transform bg-transparent"
             />
           </div>
         </div>
-        
+
         {/* Tagline */}
         <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light italic mb-4 max-w-3xl mx-auto leading-relaxed">
           &ldquo;Luz que trasciende, aromas que abrazan el alma&rdquo;
         </p>
-        
+
         {/* Specialty description */}
         <p className="text-lg md:text-xl text-foreground/80 mb-4 max-w-2xl mx-auto leading-relaxed">
-          Expertos en pequeñas obras de arte personalizadas que ta harán <span className="text-accent font-semibold">vivir</span> y{" "}
-          <span className="text-primary font-semibold">recordar momentos</span>. 
+          Expertos en pequeñas obras de arte personalizadas que te harán <span className="text-accent font-semibold">vivir</span> y{" "}
+          <span className="text-primary font-semibold">recordar momentos</span>.
           Cada pieza es creada a mano con amor y dedicación.
         </p>
-        
+
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105"
             onClick={() => scrollToSection("productos")}
           >
             <Sparkles className="w-5 h-5 mr-2" />
             Ver Colección
           </Button>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             variant="outline"
             className="border-accent text-accent hover:bg-accent hover:text-accent-foreground px-8 py-6 text-lg rounded-full transition-all hover:scale-105"
             onClick={() => scrollToSection("mascotas")}
@@ -71,7 +71,7 @@ export function Hero() {
             Velas de Mascotas
           </Button>
         </div>
-        
+
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <div className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center pt-2">
