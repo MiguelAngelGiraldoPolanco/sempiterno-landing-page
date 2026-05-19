@@ -1,0 +1,96 @@
+import { User } from "lucide-react";
+
+export interface User {
+    id: number;
+    email: string;
+    password_hash: string;
+    is_admin: boolean;
+    create_at: string;
+    update_at: string;
+}
+
+export interface LoginResponse {
+    access_token: string;
+    token_type: string;
+    user: User;
+}
+
+const API_URL = "http://localhost:8000/api/v1/users";
+
+
+export async function getUserById(user_id: number): Promise<User> {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/${user_id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) throw new Error("Error al obtener el usuario por el id");
+    return await response.json();
+}
+
+export async function createUser(nuevoUser: Omit<User, 'id' | 'create_at' | 'update_at'>): Promise<User> {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/create`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(nuevoUser),
+    });
+    if (!response.ok) throw new Error("Error al crear el usuario");
+    return await response.json();
+}
+
+export async function loginUser(credentials: Pick<User, 'email' | 'password_hash'>): Promise<LoginResponse> {
+    const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+    });
+    if (!response.ok) throw new Error("Error al hacer login");
+    return await response.json();
+}
+
+export async function modifyUser(user_modify: Partial<User>, user_id: number): Promise<User> {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/${user_id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(user_modify),
+    });
+    if (!response.ok) throw new Error("Error al modificar el usuario");
+    return await response.json();
+}
+
+export async function getUserByEmail(email: string): Promise<User> {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/email/${encodeURIComponent(email)}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) throw new Error("Error al obtener el usuario por el email");
+    return await response.json();
+}
+
+export async function deleteUser(userId: number): Promise<{ message: string }> {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/${userId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) throw new Error("Error al eliminar el usuario");
+    return await response.json();
+}
