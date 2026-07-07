@@ -3,16 +3,21 @@ import { User } from "lucide-react";
 export interface User {
     id: number;
     email: string;
-    password_hash: string;
     is_admin: boolean;
     create_at: string;
     update_at: string;
+    is_active: boolean;
+}
+
+export interface UserLogin {
+    email: string;
+    password: string;
 }
 
 export interface LoginResponse {
     access_token: string;
     token_type: string;
-    user: User;
+    id: number;
 }
 
 const API_URL = "http://localhost:8000/api/v1/users";
@@ -45,7 +50,7 @@ export async function createUser(nuevoUser: Omit<User, 'id' | 'create_at' | 'upd
     return await response.json();
 }
 
-export async function loginUser(credentials: Pick<User, 'email' | 'password_hash'>): Promise<LoginResponse> {
+export async function loginUser(credentials: Pick<UserLogin, 'email' | 'password'>): Promise<LoginResponse> {
     const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -14,6 +14,7 @@ import {
     CheckCircle,
     Clock
 } from 'lucide-react'
+import { loginUser } from '../api/fetch-user'
 
 export default function AdminDashboard() {
     // Estados para simular la autenticación y la navegación
@@ -22,11 +23,19 @@ export default function AdminDashboard() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    // Manejador del Login (Simulado)
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault()
-        if (email && password) {
+    // Manejador del Login 
+    const handleLogin = async (e: React.FormEvent) => {
+        try {
+            e.preventDefault()
+
+            const data = await loginUser({ email, password })
+
+            localStorage.setItem("token", data.access_token)
+
             setIsLoggedIn(true)
+
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error)
         }
     }
 
