@@ -1,5 +1,4 @@
 
-// 1. Defines la estructura de tu Lead (igual que tu modelo de Pydantic en FastAPI)
 export interface Lead {
     id: number;
     name: string;
@@ -15,14 +14,13 @@ export interface Lead {
 
 const API_URL = "http://localhost:8000/api/v1/leads";
 
-// 2. Función para traer los leads (Retorna una Promesa con un Array de Leads)
+
 export async function getAllLeads(): Promise<Lead[]> {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error("Error al obtener los leads");
     return await response.json();
 }
 
-// 3. Función para crear un lead (Recibe un Lead y retorna el Lead guardado)
 export async function createLead(nuevoLead: Lead): Promise<Lead> {
     const response = await fetch(API_URL, {
         method: "POST",
