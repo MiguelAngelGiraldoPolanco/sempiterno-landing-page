@@ -6,7 +6,8 @@ import {
     ArrowLeft, Plus, X, CheckCircle, Clock, AlertTriangle,
 } from "lucide-react"
 import {
-    createTicket, getTicketById, updateTicket, deleteTicket, descargarFactura,
+    createTicket, getTicketById, getAllTickets, getReporteMensual,
+    updateTicket, deleteTicket, descargarFactura,
     type Ticket, type ProductoItem, type TicketUpdate,
 } from "@/app/api/fetch-ticket"
 
@@ -36,8 +37,13 @@ const cop = (n: number) =>
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
 
 // convierte texto → número, tolerando coma decimal (Colombia) y vacío
-const toNumber = (s: string) => {
+const toNumberIva = (s: string) => {
     const n = Number(String(s).replace(',', '.'))
+    return Number.isFinite(n) ? n : 0
+}
+
+const toNumberProduct = (s: string) => {
+    const n = Number(s)
     return Number.isFinite(n) ? n : 0
 }
 
@@ -115,6 +121,53 @@ function TicketCard({ t }: { t: Ticket }) {
     )
 }
 
+// Tabla compacta para LISTAR varias facturas (ver todas / por fechas / por id).
+function TicketsTable({ tickets, onPdf, onModificar }: { tickets: Ticket[]; onPdf: (id: number) => void; onModificar: (t: Ticket) => void }) {
+    if (tickets.length === 0)
+        return <p className="text-slate-500 text-sm">No hay facturas para mostrar.</p>
+    return (
+        <div className="border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+            <table className="w-full text-sm text-left">
+                <thead>
+                    <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                        <th className="p-3 pl-5">ID</th>
+                        <th className="p-3">Cliente</th>
+                        <th className="p-3 text-right">Total</th>
+                        <th className="p-3 text-center">Estado</th>
+                        <th className="p-3 pr-5 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                    {tickets.map(t => (
+                        <tr key={t.id} className="hover:bg-slate-50/60">
+                            <td className="p-3 pl-5 font-mono text-slate-400">#{t.id}</td>
+                            <td className="p-3 font-medium text-slate-800">{t.customerName}</td>
+                            <td className="p-3 text-right text-slate-700 tabular-nums">{cop(t.total)}</td>
+                            <td className="p-3 text-center">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${t.paid ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                                    {t.paid ? 'Pagada' : 'Pendiente'}
+                                </span>
+                            </td>
+                            <td className="p-3 pr-5 text-right">
+                                <div className="inline-flex items-center gap-3">
+                                    <button onClick={() => onModificar(t)}
+                                        className="text-amber-600 hover:text-amber-800 font-medium inline-flex items-center gap-1">
+                                        <Pencil className="w-4 h-4" /> Modificar
+                                    </button>
+                                    <button onClick={() => onPdf(t.id)}
+                                        className="text-indigo-600 hover:text-indigo-900 font-medium inline-flex items-center gap-1">
+                                        <Download className="w-4 h-4" /> PDF
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}
+
 // Editor de productos: recibe la lista y los handlers por props.
 function ProductsEditor({
     products, onUpdate, onAdd, onRemove,
@@ -127,14 +180,15 @@ function ProductsEditor({
     return (
         <div className="space-y-3">
             <label className="block text-sm font-medium text-slate-700">Productos</label>
+            <label className="block text-sm font-medium text-slate-700">ej:  vela1.  |  1  |  10000 = $10.000</label>
             {products.map((p, i) => (
                 <div key={i} className="flex gap-2 items-center">
                     <input className={inputCls} type="text" placeholder="Nombre" value={p.nombre}
                         onChange={e => onUpdate(i, 'nombre', e.target.value)} />
                     <input className={`${inputCls} w-24`} type="text" inputMode="numeric" placeholder="Cant." value={p.cantidad}
-                        onChange={e => onUpdate(i, 'cantidad', e.target.value)} />
+                        onChange={e => onUpdate(i, 'cantidad', e.target.value.replace(/\D/g, ''))} />
                     <input className={`${inputCls} w-36`} type="text" inputMode="decimal" placeholder="Precio" value={p.precio_unidad}
-                        onChange={e => onUpdate(i, 'precio_unidad', e.target.value)} />
+                        onChange={e => onUpdate(i, 'precio_unidad', e.target.value.replace(/\D/g, ''))} />
                     <button type="button" onClick={() => onRemove(i)}
                         className="p-2 text-slate-400 hover:text-rose-600 transition-all shrink-0 disabled:opacity-30"
                         disabled={products.length === 1}>
@@ -160,6 +214,8 @@ export function TicketSection() {
     const [customerName, setCustomerName] = useState('')
     const [iva, setIva] = useState('')
     const [products, setProducts] = useState<ProductForm[]>([{ ...emptyProductForm }])
+    const [paid, setPaid] = useState(false)
+    const [delivered, setDelivered] = useState(false)
 
     // ver / modificar / eliminar por id
     const [idInput, setIdInput] = useState('')
@@ -168,12 +224,20 @@ export function TicketSection() {
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [deleted, setDeleted] = useState(false)
 
+    // listado de facturas (ver todas / por fechas / por id) + filtro de fechas + resumen
+    const [tickets, setTickets] = useState<Ticket[]>([])
+    const [fechaInicio, setFechaInicio] = useState('')
+    const [fechaFin, setFechaFin] = useState('')
+    const [reporteInfo, setReporteInfo] = useState<{ total_ventas: number; cantidad_tickets: number } | null>(null)
+
     // vuelve al menú y limpia TODO el estado (para que cada acción empiece de cero)
     function volver() {
         setView('menu'); setError(null); setLoading(false)
         setCustomerName(''); setIva(''); setProducts([{ ...emptyProductForm }])
         setIdInput(''); setTicket(null); setResultId(null)
         setConfirmDelete(false); setDeleted(false)
+        setTickets([]); setFechaInicio(''); setFechaFin(''); setReporteInfo(null)
+        setPaid(false); setDelivered(false)
     }
 
     // ---- helpers del editor de productos ----
@@ -187,8 +251,8 @@ export function TicketSection() {
     function parseProducts(): ProductoItem[] {
         return products.map(p => ({
             nombre: p.nombre,
-            cantidad: toNumber(p.cantidad),
-            precio_unidad: toNumber(p.precio_unidad),
+            cantidad: toNumberProduct(p.cantidad),
+            precio_unidad: toNumberProduct(p.precio_unidad),
         }))
     }
 
@@ -212,7 +276,7 @@ export function TicketSection() {
         e.preventDefault()
         setError(null); setLoading(true); setTicket(null); setResultId(null)
         try {
-            const nuevo = await createTicket({ customerName, products: parseProducts(), iva: toNumber(iva) })
+            const nuevo = await createTicket({ customerName, products: parseProducts(), iva: toNumberIva(iva) })
             setTicket(nuevo)
             setResultId(nuevo.id)
         } catch {
@@ -220,16 +284,52 @@ export function TicketSection() {
         } finally { setLoading(false) }
     }
 
+    // buscar por ID → lo mostramos como una lista de un solo elemento
     async function handleBuscar() {
-        setError(null); setLoading(true); setTicket(null)
+        setError(null); setLoading(true); setReporteInfo(null)
         try {
-            setTicket(await getTicketById(Number(idInput)))
+            const t = await getTicketById(Number(idInput))
+            setTickets([t])
         } catch {
+            setTickets([])
             setError(`No se encontró ninguna factura con el ID ${idInput}.`)
         } finally { setLoading(false) }
     }
 
-    // carga la factura en el formulario para editarla
+    // ver TODAS las facturas
+    async function handleVerTodas() {
+        setError(null); setLoading(true); setReporteInfo(null)
+        try {
+            setTickets(await getAllTickets())
+        } catch {
+            setError("No se pudieron cargar las facturas.")
+        } finally { setLoading(false) }
+    }
+
+    // filtrar por rango de fechas (usa el endpoint de reporte, que además da totales)
+    async function handleFiltrarFechas() {
+        setError(null); setLoading(true)
+        try {
+            const rep = await getReporteMensual(fechaInicio, `${fechaFin}T23:59:59`)
+            setTickets(rep.tickets)
+            setReporteInfo({ total_ventas: rep.total_ventas, cantidad_tickets: rep.cantidad_tickets })
+        } catch {
+            setError("No se pudo generar el reporte por fechas.")
+        } finally { setLoading(false) }
+    }
+
+    // salta a "modificar" con una factura ya cargada (desde la tabla de "ver"),
+    // sin re-consultar el backend: ya tenemos el objeto completo en la lista.
+    function irAModificar(t: Ticket) {
+        setError(null); setResultId(null)
+        setTicket(t)
+        setIva(String(t.iva))
+        setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
+        setPaid(t.paid); setDelivered(t.delivered)
+        setView('modificar')
+    }
+
+    // carga la factura en el formulario para editarla (cuando entras por ID)
     async function handleCargarParaModificar() {
         setError(null); setLoading(true)
         try {
@@ -237,6 +337,7 @@ export function TicketSection() {
             setTicket(t)
             setIva(String(t.iva))
             setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
+            setPaid(t.paid); setDelivered(t.delivered)
         } catch {
             setError(`No se encontró ninguna factura con el ID ${idInput}.`)
         } finally { setLoading(false) }
@@ -247,7 +348,7 @@ export function TicketSection() {
         if (!ticket) return
         setError(null); setLoading(true)
         try {
-            const cambios: TicketUpdate = { iva: toNumber(iva), products: parseProducts() }
+            const cambios: TicketUpdate = { iva: toNumberIva(iva), products: parseProducts(), paid, delivered }
             const actualizado = await updateTicket(ticket.id, cambios)
             setTicket(actualizado)
             setResultId(actualizado.id)
@@ -345,28 +446,55 @@ export function TicketSection() {
     // ---------------- VER ----------------
     if (view === 'ver') {
         return (
-            <div className="max-w-2xl">
+            <div className="max-w-3xl">
                 <Header title="Ver Facturas" onBack={volver} />
                 <ErrorMsg error={error} />
-                <div className="flex gap-2 mb-6">
-                    <input className={inputCls} type="text" inputMode="numeric" placeholder="ID de la factura" value={idInput}
-                        onChange={e => setIdInput(e.target.value)} />
-                    <button onClick={handleBuscar} className={primaryBtn} disabled={loading || !idInput}>
-                        <Search className="w-4 h-4" /> {loading ? 'Buscando…' : 'Buscar'}
+
+                <div className="space-y-4 mb-6">
+                    {/* Opción 1: todas */}
+                    <button onClick={handleVerTodas} className={primaryBtn} disabled={loading}>
+                        <FileSpreadsheet className="w-4 h-4" /> Ver todas las facturas
                     </button>
-                    {/* Placeholder de la próxima funcionalidad (export a Excel de todas las facturas) */}
-                    <button className={ghostBtn} disabled title="Próximamente: exportar todas las facturas a Excel">
-                        <FileSpreadsheet className="w-4 h-4" /> Descargar reporte
-                    </button>
-                </div>
-                {ticket && (
-                    <div className="space-y-4">
-                        <TicketCard t={ticket} />
-                        <button onClick={() => handleDescargarPdf(ticket.id)} className={primaryBtn}>
-                            <Download className="w-4 h-4" /> Descargar PDF
+
+                    {/* Opción 2: por ID */}
+                    <div className="flex gap-2">
+                        <input className={inputCls} type="text" inputMode="numeric" placeholder="Buscar por ID de factura" value={idInput}
+                            onChange={e => setIdInput(e.target.value.replace(/\D/g, ''))} />
+                        <button onClick={handleBuscar} className={ghostBtn} disabled={loading || !idInput}>
+                            <Search className="w-4 h-4" /> Buscar
                         </button>
                     </div>
+
+                    {/* Opción 3: por rango de fechas */}
+                    <div className="flex flex-wrap gap-2 items-end">
+                        <div>
+                            <label className="block text-xs text-slate-500 mb-1">Desde</label>
+                            <input className={inputCls} type="date" value={fechaInicio}
+                                onChange={e => setFechaInicio(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-slate-500 mb-1">Hasta</label>
+                            <input className={inputCls} type="date" value={fechaFin}
+                                onChange={e => setFechaFin(e.target.value)} />
+                        </div>
+                        <button onClick={handleFiltrarFechas} className={ghostBtn} disabled={loading || !fechaInicio || !fechaFin}>
+                            <Search className="w-4 h-4" /> Filtrar por fecha
+                        </button>
+                    </div>
+                </div>
+
+                {/* Resumen (solo cuando el filtro fue por fechas) */}
+                {reporteInfo && (
+                    <div className="flex gap-6 mb-4 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                        <span className="text-slate-600">Facturas: <b className="text-slate-900">{reporteInfo.cantidad_tickets}</b></span>
+                        <span className="text-slate-600">Total ventas: <b className="text-slate-900 tabular-nums">{cop(reporteInfo.total_ventas)}</b></span>
+                    </div>
                 )}
+
+                {/* Resultados */}
+                {loading
+                    ? <p className="text-slate-500 text-sm">Cargando…</p>
+                    : tickets.length > 0 && <TicketsTable tickets={tickets} onPdf={handleDescargarPdf} onModificar={irAModificar} />}
             </div>
         )
     }
@@ -406,6 +534,16 @@ export function TicketSection() {
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">IVA (ej. 0.19 = 19%)</label>
                             <input className={`${inputCls} w-40`} type="text" inputMode="decimal" placeholder="0.19" value={iva}
                                 onChange={e => setIva(e.target.value)} />
+                        </div>
+                        <div className="flex gap-6">
+                            <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                <input type="checkbox" checked={paid} onChange={e => setPaid(e.target.checked)} className="w-4 h-4 accent-slate-900" />
+                                Pagada
+                            </label>
+                            <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                <input type="checkbox" checked={delivered} onChange={e => setDelivered(e.target.checked)} className="w-4 h-4 accent-slate-900" />
+                                Entregada
+                            </label>
                         </div>
                         <button type="submit" className={primaryBtn} disabled={loading}>
                             <Pencil className="w-4 h-4" /> {loading ? 'Guardando…' : 'Guardar cambios'}
