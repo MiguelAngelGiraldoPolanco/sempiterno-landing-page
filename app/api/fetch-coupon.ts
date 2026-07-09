@@ -1,3 +1,4 @@
+import { API_BASE } from "./config";
 
 export interface Coupon {
     id: number;
@@ -8,7 +9,7 @@ export interface Coupon {
 }
 
 
-const API_URL = "http://localhost:8000/api/v1/coupons";
+const API_URL = `${API_BASE}/coupons`;
 
 
 export async function getAllCoupons(): Promise<Coupon[]> {

@@ -1,3 +1,4 @@
+import { API_BASE } from "./config";
 
 export interface ProductoItem {
     nombre: string;
@@ -35,7 +36,7 @@ export interface ReporteMensual {
     tickets: Ticket[];
 }
 
-const API_URL = "http://localhost:8000/api/v1/tickets";
+const API_URL = `${API_BASE}/tickets`;
 
 function authHeaders(): HeadersInit {
     const token = localStorage.getItem("token");

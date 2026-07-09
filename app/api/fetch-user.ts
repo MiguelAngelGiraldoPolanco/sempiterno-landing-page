@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { API_BASE } from "./config";
 
 export interface User {
     id: number;
@@ -20,7 +20,7 @@ export interface LoginResponse {
     id: number;
 }
 
-const API_URL = "http://localhost:8000/api/v1/users";
+const API_URL = `${API_BASE}/users`;
 
 
 export async function getUserById(user_id: number): Promise<User> {
