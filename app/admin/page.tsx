@@ -1,19 +1,16 @@
 "use client"
 
-import { UserSearch } from 'lucide-react'
 import React, { useState } from 'react'
 import {
     Ticket,
     Tag,
-    Users,
     UserCheck,
+    TrendingUp,
     LogOut,
     Lock,
     Mail,
-    Plus,
-    TrendingUp,
-    CheckCircle,
-    Clock
+    Menu,
+    X,
 } from 'lucide-react'
 import { loginUser } from '../api/fetch-user'
 import { UserSection } from './components/user-section'
@@ -21,30 +18,72 @@ import { LeadsSection } from './components/lead-section'
 import { CouponSection } from './components/coupon-section'
 import { TicketSection } from './components/ticket-section'
 
+// Items del menú en un solo sitio (DRY): los pintamos igual en el sidebar de escritorio
+// y en el desplegable de móvil, sin repetir el JSX de cada botón.
+const navItems = [
+    { key: 'tickets', label: 'Facturas', icon: Ticket },
+    { key: 'cupones', label: 'Cupones de Descuento', icon: Tag },
+    { key: 'leads', label: 'Leads de Contacto', icon: TrendingUp },
+    { key: 'users', label: 'Sección de Usuarios', icon: UserCheck },
+] as const
+
 export default function AdminDashboard() {
-    // Estados para simular la autenticación y la navegación
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [activeTab, setActiveTab] = useState('tickets')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-    // Manejador del Login 
+    // Manejador del Login
     const handleLogin = async (e: React.FormEvent) => {
         try {
             e.preventDefault()
-
             const data = await loginUser({ email, password })
-
             localStorage.setItem("token", data.access_token)
-
             localStorage.setItem("userId", String(data.id))
-
             setIsLoggedIn(true)
-
         } catch (error) {
             console.error("Error al iniciar sesión:", error)
         }
     }
+
+    // seleccionar una sección: además cierra el menú móvil
+    const selectTab = (key: string) => {
+        setActiveTab(key)
+        setMobileMenuOpen(false)
+    }
+
+    // cerrar sesión: limpia el token y sale
+    const handleLogout = () => {
+        localStorage.removeItem("token")
+        localStorage.removeItem("userId")
+        setMobileMenuOpen(false)
+        setIsLoggedIn(false)
+    }
+
+    // botones de navegación (se reutilizan en escritorio y móvil)
+    const renderNav = () =>
+        navItems.map(({ key, label, icon: Icon }) => (
+            <button
+                key={key}
+                onClick={() => selectTab(key)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeTab === key
+                    ? 'bg-slate-900 text-white shadow-md shadow-slate-950/10'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+            >
+                <Icon className="w-5 h-5" /> {label}
+            </button>
+        ))
+
+    const logoutButton = (
+        <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-rose-600 hover:bg-rose-50 transition-all"
+        >
+            <LogOut className="w-5 h-5" /> Cerrar Sesión
+        </button>
+    )
 
     // VISTA 1: PANTALLA DE LOGIN
     if (!isLoggedIn) {
@@ -102,102 +141,52 @@ export default function AdminDashboard() {
         )
     }
 
-    // VISTA 2: DASHBOARD DE ADMINISTRACIÓN (FONDO BLANCO)
+    // VISTA 2: DASHBOARD
     return (
-        <div className="min-h-screen bg-white flex text-slate-800 font-sans">
+        <div className="min-h-screen bg-white text-slate-800 font-sans flex flex-col md:flex-row">
 
-            {/* BARRA LATERAL IZQUIERDA */}
-            <aside className="w-64 border-r border-slate-100 flex flex-col justify-between p-6 bg-white shrink-0 sticky top-0 h-screen">
+            {/* ===== BARRA SUPERIOR (SOLO MÓVIL) ===== */}
+            <div className="md:hidden flex items-center justify-between p-4 border-b border-slate-100 sticky top-0 bg-white z-30">
+                <span className="font-serif text-lg font-bold bg-gradient-to-r from-slate-900 to-indigo-600 bg-clip-text text-transparent">
+                    Sempiterno Admin
+                </span>
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="p-2 text-slate-700"
+                    aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                >
+                    {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+            </div>
+
+            {/* ===== MENÚ DESPLEGABLE (SOLO MÓVIL) ===== */}
+            {mobileMenuOpen && (
+                <nav className="md:hidden border-b border-slate-100 bg-white p-4 space-y-1.5">
+                    {renderNav()}
+                    <div className="pt-2 mt-2 border-t border-slate-100">{logoutButton}</div>
+                </nav>
+            )}
+
+            {/* ===== SIDEBAR (SOLO ESCRITORIO) ===== */}
+            <aside className="hidden md:flex w-64 border-r border-slate-100 flex-col justify-between p-6 bg-white shrink-0 sticky top-0 h-screen">
                 <div>
-                    {/* Logo / Título del proyecto */}
                     <div className="mb-10 px-2">
                         <span className="font-serif text-xl font-bold bg-gradient-to-r from-slate-900 to-indigo-600 bg-clip-text text-transparent">
                             Sempiterno Admin
                         </span>
                         <p className="text-xs text-slate-400 font-medium tracking-wider uppercase mt-1">Control General</p>
                     </div>
-
-                    {/* Menú de Navegación */}
-                    <nav className="space-y-1.5">
-                        <button
-                            onClick={() => setActiveTab('tickets')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeTab === 'tickets'
-                                ? 'bg-slate-900 text-white shadow-md shadow-slate-950/10'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
-                        >
-                            <Ticket className="w-5 h-5" />
-                            Facturas
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab('cupones')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeTab === 'cupones'
-                                ? 'bg-slate-900 text-white shadow-md shadow-slate-950/10'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
-                        >
-                            <Tag className="w-5 h-5" />
-                            Cupones de Descuento
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab('leads')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeTab === 'leads'
-                                ? 'bg-slate-900 text-white shadow-md shadow-slate-950/10'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
-                        >
-                            <TrendingUp className="w-5 h-5" />
-                            Leads de Contacto
-                        </button>
-
-                        <button
-                            onClick={() => setActiveTab('users')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeTab === 'users'
-                                ? 'bg-slate-900 text-white shadow-md shadow-slate-950/10'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
-                        >
-                            <UserCheck className="w-5 h-5" />
-                            Sección de Usuarios
-                        </button>
-                    </nav>
+                    <nav className="space-y-1.5">{renderNav()}</nav>
                 </div>
-
-                {/* Botón de Logout abajo del panel */}
-                <button
-                    onClick={() => setIsLoggedIn(false)}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-rose-600 hover:bg-rose-50 transition-all mt-auto"
-                >
-                    <LogOut className="w-5 h-5" />
-                    Cerrar Sesión
-                </button>
+                <div className="mt-auto">{logoutButton}</div>
             </aside>
 
-            {/* CONTENIDO PRINCIPAL DE LA PÁGINA */}
-            <main className="flex-1 p-10 max-w-6xl overflow-y-auto">
-
-                {/* SECCIÓN 1: TICKETS */}
-                {activeTab === 'tickets' && (
-                    <TicketSection />
-                )}
-
-                {/* SECCIÓN 2: CUPONES */}
-                {activeTab === 'cupones' && (
-                    <CouponSection />
-                )}
-
-                {/* SECCIÓN 3: LEADS */}
-                {activeTab === 'leads' && (
-                    <LeadsSection />
-                )}
-
-                {/* SECCIÓN 4: USERS */}
-                {activeTab === 'users' && (
-                    <UserSection />
-                )}
-
+            {/* ===== CONTENIDO PRINCIPAL ===== */}
+            <main className="flex-1 w-full p-6 md:p-10 max-w-6xl overflow-y-auto">
+                {activeTab === 'tickets' && <TicketSection />}
+                {activeTab === 'cupones' && <CouponSection />}
+                {activeTab === 'leads' && <LeadsSection />}
+                {activeTab === 'users' && <UserSection />}
             </main>
         </div>
     )
