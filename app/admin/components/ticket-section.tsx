@@ -113,9 +113,15 @@ function TicketCard({ t }: { t: Ticket }) {
                     ))}
                 </tbody>
             </table>
-            <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-sm">
-                <span className="text-slate-500">IVA aplicado: {(t.iva * 100).toFixed(0)}%</span>
-                <span className="text-lg font-bold text-slate-900">Total: {cop(t.total)}</span>
+            <div className="pt-3 border-t border-slate-100 text-sm space-y-1.5">
+                <div className="flex justify-between items-center">
+                    <span className="text-slate-500">IVA aplicado: {(t.iva * 100).toFixed(0)}%</span>
+                    <span className="text-lg font-bold text-slate-900">Total: {cop(t.total)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Abono: {cop(t.first_payment)}</span>
+                    <span className="font-semibold text-rose-600">Saldo: {cop(t.total - t.first_payment)}</span>
+                </div>
             </div>
         </div>
     )
@@ -132,6 +138,7 @@ function TicketsTable({ tickets, onPdf, onModificar }: { tickets: Ticket[]; onPd
                     <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
                         <th className="p-3 pl-5">ID</th>
                         <th className="p-3">Cliente</th>
+                        <th className="p-3 text-right">Abono</th>
                         <th className="p-3 text-right">Total</th>
                         <th className="p-3 text-center">Estado</th>
                         <th className="p-3 pr-5 text-right">Acciones</th>
@@ -142,6 +149,7 @@ function TicketsTable({ tickets, onPdf, onModificar }: { tickets: Ticket[]; onPd
                         <tr key={t.id} className="hover:bg-slate-50/60">
                             <td className="p-3 pl-5 font-mono text-slate-400">#{t.id}</td>
                             <td className="p-3 font-medium text-slate-800">{t.customerName}</td>
+                            <td className="p-3 text-right text-slate-600 tabular-nums">{cop(t.first_payment)}</td>
                             <td className="p-3 text-right text-slate-700 tabular-nums">{cop(t.total)}</td>
                             <td className="p-3 text-center">
                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${t.paid ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
@@ -216,6 +224,7 @@ export function TicketSection() {
     const [products, setProducts] = useState<ProductForm[]>([{ ...emptyProductForm }])
     const [paid, setPaid] = useState(false)
     const [delivered, setDelivered] = useState(false)
+    const [firstPayment, setFirstPayment] = useState('')  // abono del cliente (string mientras se escribe)
 
     // ver / modificar / eliminar por id
     const [idInput, setIdInput] = useState('')
@@ -237,7 +246,7 @@ export function TicketSection() {
         setIdInput(''); setTicket(null); setResultId(null)
         setConfirmDelete(false); setDeleted(false)
         setTickets([]); setFechaInicio(''); setFechaFin(''); setReporteInfo(null)
-        setPaid(false); setDelivered(false)
+        setPaid(false); setDelivered(false); setFirstPayment('')
     }
 
     // ---- helpers del editor de productos ----
@@ -276,7 +285,7 @@ export function TicketSection() {
         e.preventDefault()
         setError(null); setLoading(true); setTicket(null); setResultId(null)
         try {
-            const nuevo = await createTicket({ customerName, products: parseProducts(), iva: toNumberIva(iva) })
+            const nuevo = await createTicket({ customerName, products: parseProducts(), iva: toNumberIva(iva), first_payment: toNumberProduct(firstPayment) })
             setTicket(nuevo)
             setResultId(nuevo.id)
         } catch {
@@ -325,7 +334,7 @@ export function TicketSection() {
         setTicket(t)
         setIva(String(t.iva))
         setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
-        setPaid(t.paid); setDelivered(t.delivered)
+        setPaid(t.paid); setDelivered(t.delivered); setFirstPayment(String(t.first_payment))
         setView('modificar')
     }
 
@@ -337,7 +346,7 @@ export function TicketSection() {
             setTicket(t)
             setIva(String(t.iva))
             setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
-            setPaid(t.paid); setDelivered(t.delivered)
+            setPaid(t.paid); setDelivered(t.delivered); setFirstPayment(String(t.first_payment))
         } catch {
             setError(`No se encontró ninguna factura con el ID ${idInput}.`)
         } finally { setLoading(false) }
@@ -348,7 +357,7 @@ export function TicketSection() {
         if (!ticket) return
         setError(null); setLoading(true)
         try {
-            const cambios: TicketUpdate = { iva: toNumberIva(iva), products: parseProducts(), paid, delivered }
+            const cambios: TicketUpdate = { iva: toNumberIva(iva), products: parseProducts(), paid, delivered, first_payment: toNumberProduct(firstPayment) }
             const actualizado = await updateTicket(ticket.id, cambios)
             setTicket(actualizado)
             setResultId(actualizado.id)
@@ -433,6 +442,11 @@ export function TicketSection() {
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">IVA (ej. 0.19 = 19%)</label>
                             <input className={`${inputCls} w-40`} type="text" inputMode="decimal" placeholder="0.19" value={iva}
                                 onChange={e => setIva(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Abono del cliente (opcional)</label>
+                            <input className={`${inputCls} w-52`} type="text" inputMode="numeric" placeholder="Ej. 20000" value={firstPayment}
+                                onChange={e => setFirstPayment(e.target.value.replace(/\D/g, ''))} />
                         </div>
                         <button type="submit" className={primaryBtn} disabled={loading}>
                             <FilePlus className="w-4 h-4" /> {loading ? 'Creando…' : 'Crear factura'}
@@ -534,6 +548,11 @@ export function TicketSection() {
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">IVA (ej. 0.19 = 19%)</label>
                             <input className={`${inputCls} w-40`} type="text" inputMode="decimal" placeholder="0.19" value={iva}
                                 onChange={e => setIva(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Abono del cliente (opcional)</label>
+                            <input className={`${inputCls} w-52`} type="text" inputMode="numeric" placeholder="Ej. 20000" value={firstPayment}
+                                onChange={e => setFirstPayment(e.target.value.replace(/\D/g, ''))} />
                         </div>
                         <div className="flex gap-6">
                             <label className="flex items-center gap-2 text-sm font-medium text-slate-700">

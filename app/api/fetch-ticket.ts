@@ -15,17 +15,20 @@ export interface Ticket {
     paid: boolean;
     delivered: boolean;
     create_at: string;
+    first_payment: number;
 }
 
 export interface TicketCreate {
     customerName: string;
     products: ProductoItem[];
     iva?: number;
+    first_payment?: number;
 }
 
 export interface TicketUpdate {
     products?: ProductoItem[];
     iva?: number;
+    first_payment?: number;
     paid?: boolean;
     delivered?: boolean;
 }
@@ -112,7 +115,10 @@ export async function deleteTicket(
 ): Promise<{ ok?: boolean; message?: string }> {
     const response = await fetch(`${API_URL}/${ticketId}`, {
         method: "DELETE",
-        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        headers: {
+            ...authHeaders(),
+            "Content-Type": "application/json"
+        },
     });
     if (!response.ok) throw new Error("Error al eliminar el ticket");
     return await response.json();
