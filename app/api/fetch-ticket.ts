@@ -41,7 +41,6 @@ const API_URL = `${API_BASE}/tickets`;
 function authHeaders(): HeadersInit {
     const token = localStorage.getItem("token");
     return {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
     };
 }
@@ -70,7 +69,10 @@ export async function getReporteMensual(
 ): Promise<ReporteMensual> {
     const response = await fetch(
         `${API_URL}/reporte/fechas?inicio=${encodeURIComponent(inicio)}&fin=${encodeURIComponent(fin)}`,
-        { method: "GET", headers: authHeaders() },
+        {
+            method: "GET",
+            headers: authHeaders()
+        },
     );
     if (!response.ok) throw new Error("Error al obtener el reporte mensual");
     return await response.json();
@@ -79,7 +81,10 @@ export async function getReporteMensual(
 export async function createTicket(nuevoTicket: TicketCreate): Promise<Ticket> {
     const response = await fetch(`${API_URL}/`, {
         method: "POST",
-        headers: authHeaders(),
+        headers: {
+            ...authHeaders(),
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(nuevoTicket),
     });
     if (!response.ok) throw new Error("Error al crear el ticket");
@@ -92,7 +97,10 @@ export async function updateTicket(
 ): Promise<Ticket> {
     const response = await fetch(`${API_URL}/${ticketId}`, {
         method: "PUT",
-        headers: authHeaders(),
+        headers: {
+            ...authHeaders(),
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(cambios),
     });
     if (!response.ok) throw new Error("Error al actualizar el ticket");
@@ -104,17 +112,16 @@ export async function deleteTicket(
 ): Promise<{ ok?: boolean; message?: string }> {
     const response = await fetch(`${API_URL}/${ticketId}`, {
         method: "DELETE",
-        headers: authHeaders(),
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
     });
     if (!response.ok) throw new Error("Error al eliminar el ticket");
     return await response.json();
 }
 
 export async function descargarFactura(ticketId: number): Promise<Blob> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/${ticketId}/factura`, {
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders(),
     });
     if (!response.ok) throw new Error("Error al descargar la factura");
     return await response.blob();

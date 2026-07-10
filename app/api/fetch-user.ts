@@ -22,28 +22,26 @@ export interface LoginResponse {
 
 const API_URL = `${API_BASE}/users`;
 
+function authHeaders(): HeadersInit {
+    const token = localStorage.getItem("token");
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+}
 
 export async function getUserById(user_id: number): Promise<User> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/${user_id}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: authHeaders(),
     });
     if (!response.ok) throw new Error("Error al obtener el usuario por el id");
     return await response.json();
 }
 
 export async function createUser(nuevoUser: Omit<User, 'id' | 'create_at' | 'update_at'>): Promise<User> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/create`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(nuevoUser),
     });
     if (!response.ok) throw new Error("Error al crear el usuario");
@@ -61,12 +59,11 @@ export async function loginUser(credentials: Pick<UserLogin, 'email' | 'password
 }
 
 export async function modifyUser(user_modify: Partial<User>, user_id: number): Promise<User> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/${user_id}`, {
         method: "PUT",
         headers: {
+            ...authHeaders(),
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(user_modify),
     });
@@ -75,12 +72,11 @@ export async function modifyUser(user_modify: Partial<User>, user_id: number): P
 }
 
 export async function getUserByEmail(email: string): Promise<User> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/email/${encodeURIComponent(email)}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            ...authHeaders()
         },
     });
     if (!response.ok) throw new Error("Error al obtener el usuario por el email");
@@ -88,12 +84,11 @@ export async function getUserByEmail(email: string): Promise<User> {
 }
 
 export async function deleteUser(userId: number): Promise<{ message: string }> {
-    const token = localStorage.getItem("token");
     const response = await fetch(`${API_URL}/${userId}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            ...authHeaders()
         },
     });
     if (!response.ok) throw new Error("Error al eliminar el usuario");

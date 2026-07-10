@@ -15,31 +15,50 @@ export interface Lead {
 
 const API_URL = `${API_BASE}/leads`;
 
+const authHeaders = (): HeadersInit => {
+    const token = localStorage.getItem("token");
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
 
 export async function getAllLeads(): Promise<Lead[]> {
-    const response = await fetch(API_URL);
+    const response = await fetch(`${API_URL}/`, {
+        method: "GET",
+        headers: authHeaders(),
+    });
     if (!response.ok) throw new Error("Error al obtener los leads");
     return await response.json();
 }
 
 export async function createLead(nuevoLead: Lead): Promise<Lead> {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL}/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            ...authHeaders(),
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(nuevoLead),
     });
     if (!response.ok) throw new Error("Error al crear el lead");
     return await response.json();
 }
 
-export async function getAllLeadsByDate(init_date: string, finish_date: string): Promise<Lead[]> {
-    const response = await fetch(`${API_URL}/reporte/fechas?inicio=${init_date}&fin=${finish_date}`);
+export async function getAllLeadsByDate(init_date: string, finish_date: string):
+    Promise<Lead[]> {
+    const response = await fetch(`${API_URL}/reporte/fechas?inicio=${init_date}&fin=${finish_date}`, {
+        method: "GET",
+        headers: authHeaders(),
+    });
     if (!response.ok) throw new Error("Error al obtener los leads por fechas");
     return await response.json();
 }
 
 export async function getLeadByEmail(email: string): Promise<Lead> {
-    const response = await fetch(`${API_URL}/email/${email}`);
+    const response = await fetch(`${API_URL}/email/${email}`, {
+        method: "GET",
+        headers: authHeaders(),
+    });
     if (!response.ok) throw new Error("Error al obtener el lead por el email");
     return await response.json();
 }
