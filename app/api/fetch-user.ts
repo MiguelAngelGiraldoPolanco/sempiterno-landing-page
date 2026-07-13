@@ -1,4 +1,5 @@
 import { API_BASE } from "./config";
+import { ApiError } from "./api-error";
 
 export interface User {
     id: number;
@@ -54,7 +55,8 @@ export async function loginUser(credentials: Pick<UserLogin, 'email' | 'password
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
     });
-    if (!response.ok) throw new Error("Error al hacer login");
+    if (!response.ok) throw new ApiError(response.status, "Login failed");
+
     return await response.json();
 }
 

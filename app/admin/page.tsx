@@ -11,12 +11,16 @@ import {
     Mail,
     Menu,
     X,
+    AlertTriangle,
+    LogIn,
+    Loader2
 } from 'lucide-react'
 import { loginUser } from '../api/fetch-user'
 import { UserSection } from './components/user-section'
 import { LeadsSection } from './components/lead-section'
 import { CouponSection } from './components/coupon-section'
 import { TicketSection } from './components/ticket-section'
+import { ApiError } from '../api/api-error'
 
 // Items del menú en un solo sitio (DRY): los pintamos igual en el sidebar de escritorio
 // y en el desplegable de móvil, sin repetir el JSX de cada botón.
@@ -27,7 +31,17 @@ const navItems = [
     { key: 'users', label: 'Sección de Usuarios', icon: UserCheck },
 ] as const
 
+function ErrorMsg({ error }: { error: string | null }) {
+    if (!error) return null
+    return (
+        <div className="mb-5 flex items-center gap-2 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+            <AlertTriangle className="w-4 h-4 shrink-0" /> {error}
+        </div>
+    )
+}
 export default function AdminDashboard() {
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [activeTab, setActiveTab] = useState('tickets')
     const [email, setEmail] = useState('')
@@ -36,15 +50,40 @@ export default function AdminDashboard() {
 
     // Manejador del Login
     const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError(null);
+        setLoading(true)
         try {
-            e.preventDefault()
             const data = await loginUser({ email, password })
             localStorage.setItem("token", data.access_token)
             localStorage.setItem("userId", String(data.id))
             setIsLoggedIn(true)
         } catch (error) {
-            console.error("Error al iniciar sesión:", error)
-        }
+            if (error instanceof ApiError) {
+                console.error(error);
+                switch (error.status) {
+                    case 400:
+                        setError("Los datos enviados no son válidos.");
+                        break;
+                    case 401:
+                        setError("Correo o contraseña incorrectos.");
+                        break;
+                    case 422:
+                        setError("Fallo de validacion.");
+                        break;
+                    case 500:
+                        setError("Error interno, contacta con el equipo tecnico.");
+                        break;
+                    default:
+                        setError("Ocurrió un error inesperado. Contacta con el equipo técnico.");
+                        break;
+                }
+
+            } else {
+                console.error(error);
+                setError("Ocurrió un error inesperado. Contacta con el equipo tecnico.")
+            }
+        } finally { setLoading(false) }
     }
 
     // seleccionar una sección: además cierra el menú móvil
@@ -89,6 +128,7 @@ export default function AdminDashboard() {
     if (!isLoggedIn) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+
                 <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200 border border-slate-100 max-w-md w-full">
                     <div className="text-center mb-8">
                         <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -131,11 +171,15 @@ export default function AdminDashboard() {
 
                         <button
                             type="submit"
-                            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-slate-900/10 active:scale-[0.98]"
+                            disabled={loading}
+                            className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-slate-900/10 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100"
                         >
-                            Ingresar al Panel
+                            {loading
+                                ? <><Loader2 className="w-5 h-5 animate-spin" /> Ingresando…</>
+                                : <><LogIn className="w-5 h-5" /> Ingresar al Panel</>}
                         </button>
                     </form>
+                    <ErrorMsg error={error} />
                 </div>
             </div>
         )
