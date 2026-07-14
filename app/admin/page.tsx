@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react'
+import { getHealth, type Health } from "@/app/api/fetch-health"
+import React, { useState, useEffect } from 'react'
 import {
     Ticket,
     Tag,
@@ -21,6 +22,7 @@ import { LeadsSection } from './components/lead-section'
 import { CouponSection } from './components/coupon-section'
 import { TicketSection } from './components/ticket-section'
 import { ApiError } from '../api/api-error'
+
 
 // Items del menú en un solo sitio (DRY): los pintamos igual en el sidebar de escritorio
 // y en el desplegable de móvil, sin repetir el JSX de cada botón.
@@ -47,6 +49,19 @@ export default function AdminDashboard() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+    //Cargamos previamente la api
+    useEffect(() => {
+        const healthData = async () => {
+            try {
+                await getHealth();
+            } catch {
+                // fire-and-forget: si falla no importa solo queria despertar la api.
+            }
+        };
+        healthData();
+    }, []);
+
 
     // Manejador del Login
     const handleLogin = async (e: React.FormEvent) => {
