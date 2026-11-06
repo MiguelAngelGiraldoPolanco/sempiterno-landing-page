@@ -16,13 +16,16 @@ export interface Ticket {
     delivered: boolean;
     create_at: string;
     first_payment: number;
+    sale_date: string;
 }
+
 
 export interface TicketCreate {
     customerName: string;
     products: ProductoItem[];
     iva?: number;
     first_payment?: number;
+    sale_date: string;
 }
 
 export interface TicketUpdate {
@@ -31,6 +34,7 @@ export interface TicketUpdate {
     first_payment?: number;
     paid?: boolean;
     delivered?: boolean;
+    sale_date?: string;
 }
 
 export interface ReporteMensual {
@@ -90,7 +94,15 @@ export async function createTicket(nuevoTicket: TicketCreate): Promise<Ticket> {
         },
         body: JSON.stringify(nuevoTicket),
     });
-    if (!response.ok) throw new Error("Error al crear el ticket");
+    if (!response.ok) {
+        const error = await response.json();
+        console.error("Error del backend:", error);
+        throw new Error("Error al crear el ticket");
+
+    }
+
+
+    //     throw new Error("Error al crear el ticket");
     return await response.json();
 }
 
