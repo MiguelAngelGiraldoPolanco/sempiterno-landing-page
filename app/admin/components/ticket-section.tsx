@@ -54,6 +54,7 @@ const toForm = (p: ProductoItem): ProductForm => ({
     precio_unidad: String(p.precio_unidad),
 })
 
+
 // ============ SUB-COMPONENTES A NIVEL DE MÓDULO ============
 // Fuera de TicketSection para que NO se recreen en cada render
 // (si estuvieran dentro, los inputs perderían el foco tras cada tecla).
@@ -117,6 +118,10 @@ function TicketCard({ t }: { t: Ticket }) {
                 <div className="flex justify-between items-center">
                     <span className="text-slate-500">IVA aplicado: {(t.iva * 100).toFixed(0)}%</span>
                     <span className="text-lg font-bold text-slate-900">Total: {cop(t.total)}</span>
+                </div>
+                <div>
+                    <span className="text-slate-500">Fecha de factura: </span>
+                    <span>{new Date(t.sale_date).toLocaleDateString('es-ES')}</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-slate-500">Abono: {cop(t.first_payment)}</span>
@@ -225,13 +230,16 @@ export function TicketSection() {
     const [paid, setPaid] = useState(false)
     const [delivered, setDelivered] = useState(false)
     const [firstPayment, setFirstPayment] = useState('')  // abono del cliente (string mientras se escribe)
-
+    const [saleDate, setSaleDate] = useState(
+        new Date().toLocaleDateString('en-CA')
+    )
     // ver / modificar / eliminar por id
     const [idInput, setIdInput] = useState('')
     const [ticket, setTicket] = useState<Ticket | null>(null)   // resultado a mostrar
     const [resultId, setResultId] = useState<number | null>(null) // id creado/editado para el botón PDF
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [deleted, setDeleted] = useState(false)
+
 
     // listado de facturas (ver todas / por fechas / por id) + filtro de fechas + resumen
     const [tickets, setTickets] = useState<Ticket[]>([])
@@ -246,7 +254,7 @@ export function TicketSection() {
         setIdInput(''); setTicket(null); setResultId(null)
         setConfirmDelete(false); setDeleted(false)
         setTickets([]); setFechaInicio(''); setFechaFin(''); setReporteInfo(null)
-        setPaid(false); setDelivered(false); setFirstPayment('')
+        setPaid(false); setDelivered(false); setFirstPayment(''); setSaleDate(new Date().toLocaleDateString('en-CA'));
     }
 
     // ---- helpers del editor de productos ----
@@ -285,7 +293,13 @@ export function TicketSection() {
         e.preventDefault()
         setError(null); setLoading(true); setTicket(null); setResultId(null)
         try {
-            const nuevo = await createTicket({ customerName, products: parseProducts(), iva: toNumberIva(iva), first_payment: toNumberProduct(firstPayment) })
+            const nuevo = await createTicket({
+                customerName,
+                products: parseProducts(),
+                iva: toNumberIva(iva),
+                first_payment: toNumberProduct(firstPayment),
+                sale_date: new Date(`${saleDate}T12:00:00`).toISOString()
+            })
             setTicket(nuevo)
             setResultId(nuevo.id)
         } catch {
@@ -335,6 +349,7 @@ export function TicketSection() {
         setIva(String(t.iva))
         setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
         setPaid(t.paid); setDelivered(t.delivered); setFirstPayment(String(t.first_payment))
+        setSaleDate(t.sale_date.slice(0, 10))
         setView('modificar')
     }
 
@@ -344,12 +359,17 @@ export function TicketSection() {
         try {
             const t = await getTicketById(Number(idInput))
             setTicket(t)
+            setSaleDate(t.sale_date.slice(0, 10))
             setIva(String(t.iva))
             setProducts(t.products.length ? t.products.map(toForm) : [{ ...emptyProductForm }])
-            setPaid(t.paid); setDelivered(t.delivered); setFirstPayment(String(t.first_payment))
+            setPaid(t.paid)
+            setDelivered(t.delivered)
+            setFirstPayment(String(t.first_payment))
         } catch {
             setError(`No se encontró ninguna factura con el ID ${idInput}.`)
-        } finally { setLoading(false) }
+        } finally {
+            setLoading(false)
+        }
     }
 
     async function handleModificar(e: React.FormEvent) {
@@ -357,7 +377,7 @@ export function TicketSection() {
         if (!ticket) return
         setError(null); setLoading(true)
         try {
-            const cambios: TicketUpdate = { iva: toNumberIva(iva), products: parseProducts(), paid, delivered, first_payment: toNumberProduct(firstPayment) }
+            const cambios: TicketUpdate = { iva: toNumberIva(iva), products: parseProducts(), paid, delivered, first_payment: toNumberProduct(firstPayment), sale_date: new Date(`${saleDate}T12:00:00`).toISOString() }
             const actualizado = await updateTicket(ticket.id, cambios)
             setTicket(actualizado)
             setResultId(actualizado.id)
@@ -442,6 +462,18 @@ export function TicketSection() {
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">IVA (ej. 0.19 = 19%)</label>
                             <input className={`${inputCls} w-40`} type="text" inputMode="decimal" placeholder="0.19" value={iva}
                                 onChange={e => setIva(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Fecha de factura
+                            </label>
+                            <input
+                                type="date"
+                                value={saleDate}
+                                onChange={(e) => setSaleDate(e.target.value)}
+                                className={inputCls}
+                                required
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">Abono del cliente (opcional)</label>
@@ -548,6 +580,18 @@ export function TicketSection() {
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">IVA (ej. 0.19 = 19%)</label>
                             <input className={`${inputCls} w-40`} type="text" inputMode="decimal" placeholder="0.19" value={iva}
                                 onChange={e => setIva(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Fecha de factura
+                            </label>
+                            <input
+                                type="date"
+                                value={saleDate}
+                                onChange={(e) => setSaleDate(e.target.value)}
+                                className={inputCls}
+                                required
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">Abono del cliente (opcional)</label>
